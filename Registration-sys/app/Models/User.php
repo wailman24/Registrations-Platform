@@ -17,8 +17,5 @@ class User extends Authenticatable
         return $this->hasOne(participant::class);
     }
 
-    public function team()
-    {
-        return $this->belongsTo(Team::class);
-    }
+    
 }

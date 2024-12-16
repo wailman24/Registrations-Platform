@@ -8,8 +8,8 @@ class Team extends Model
 {
     protected $fillable = ['Tname', 'TNum'];
 
-    public function user()
+    public function participant()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(participant::class);
     }
 }

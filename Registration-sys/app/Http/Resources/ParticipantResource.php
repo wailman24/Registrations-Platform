@@ -16,11 +16,12 @@ class ParticipantResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $team = DB::table('teams')->where('id', $this->team_id)->first();
         $u = DB::table('users')->where('id', $this->user_id)->first();
         return [
             'name' => $this->pname,
             'email' => $this->pemail,
-            //'Team number' => $this->teamNum,
+            'Team number' => $team->TNum,
             'user' => $u->name
         ];
     }

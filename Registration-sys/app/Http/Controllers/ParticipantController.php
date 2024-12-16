@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ParticipantResource;
 use App\Models\participant;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -28,16 +29,27 @@ class ParticipantController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store()
+    public function store(Request $request)
     {
 
         try {
             $user = Auth::user();
+            $exist = DB::table('participants')->where('user_id', $user->id)->exists();
+            if ($exist) {
+                return response()->json([
+                    'message' => 'you already a participant'
+                ]);
+            }
+            $request->validate([
+                'teamNum' => 'required|exists:teams,TNum'
+            ]);
+
+            $t_id = DB::table('teams')->where('TNum', $request->teamNum)->first();
 
             $partc = participant::create([
                 'pname' => $user->name,
                 'pemail' => $user->email,
-                //'teamNum' => $request->teamNum,
+                'team_id' => $t_id->id,
                 'user_id' => $user->id
             ]);
             return new ParticipantResource($partc);
