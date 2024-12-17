@@ -15,7 +15,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        return UserResource::collection(User::all());
+        $users = User::get();
+        return response()->json([
+            $users
+        ]);
     }
 
     /**
@@ -111,6 +114,6 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $user->delete();
     }
 }

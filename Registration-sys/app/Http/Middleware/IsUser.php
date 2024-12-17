@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 
-class IsAdmin
+class IsUser
 {
     /**
      * Handle an incoming request.
@@ -17,7 +17,7 @@ class IsAdmin
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::user();
-        if ($user->role_id != 1) {
+        if ($user->role_id != NULL) {
             return response()->json([
                 'message' => 'you are not allowed'
             ], 403);

@@ -45,6 +45,7 @@ class ParticipantController extends Controller
             }
 
             //check ig user is a TL "team leader"
+            //this when the user create a team he eill be a participante 
             if ($user->role_id != NULL) {
                 $role_u = DB::table('roles')->where('id', $user->role_id)->first();
                 if ($role_u->Rname == 'TL') {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeamController;
@@ -12,11 +13,19 @@ use Illuminate\Support\Facades\Route;
     
 })->middleware('auth:sanctum'); */
 
-Route::middleware(['auth:sanctum'])->group(function () {
-    Route::apiResource('participants', ParticipantController::class);
-    Route::apiResource('team', TeamController::class);
-});
-Route::apiResource('role', RoleController::class);
-Route::get('users', [UserController::class, 'index']);
 Route::post('login', [UserController::class, 'Login']);
 Route::post('register', [UserController::class, 'store']);
+
+Route::middleware(['auth:sanctum', 'IsUser'])->group(function () {
+    Route::post('user/participate', [ParticipantController::class, 'store']); //participate as not a leader
+});
+Route::middleware(['auth:sanctum', 'IsTL'])->group(function () {
+    Route::post('lead/participate', [ParticipantController::class, 'store']); //create a team and participate
+});
+
+Route::middleware(['auth:sanctum', 'IsAdmin'])->group(function () {
+    Route::apiResource('participants', ParticipantController::class);
+    Route::apiResource('team', TeamController::class);
+    Route::apiResource('role', RoleController::class);
+    Route::get('getallusers', [UserController::class, 'index']);
+});
