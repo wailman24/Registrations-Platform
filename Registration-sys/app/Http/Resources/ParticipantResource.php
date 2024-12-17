@@ -22,7 +22,7 @@ class ParticipantResource extends JsonResource
             'name' => $this->pname,
             'email' => $this->pemail,
             'Team number' => $team->TNum,
-            'user' => $u->name
+            'user' => 'user: ' . $u->name . ' with id: ' . $this->user_id
         ];
     }
 }

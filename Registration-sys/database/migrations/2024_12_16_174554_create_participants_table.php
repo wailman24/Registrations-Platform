@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('pname');
             $table->string('pemail');
-            //$table->string('teamNum');
+            $table->boolean('isTL')->default(false);
             $table->unsignedBigInteger('team_id');
             $table->unsignedBigInteger('user_id');
 

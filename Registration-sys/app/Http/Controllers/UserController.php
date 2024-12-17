@@ -32,13 +32,15 @@ class UserController extends Controller
             $request->validate([
                 'name' => 'required',
                 'email' => 'required|email|unique:users',
-                'password' => 'required|min:3'
+                'password' => 'required|min:3',
+                'role_id' => 'exists:roles,id'
             ]);
 
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                'role_id' => $request->role_id
             ]);
 
             return response()->json([

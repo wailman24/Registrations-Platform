@@ -7,6 +7,8 @@ use App\Models\participant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Http\Resources\TeamResource;
+use App\Models\Team;
 
 class ParticipantController extends Controller
 {
@@ -33,26 +35,59 @@ class ParticipantController extends Controller
     {
 
         try {
-            $user = Auth::user();
+            $user = Auth::user(); //get the authenticated user's info
+
             $exist = DB::table('participants')->where('user_id', $user->id)->exists();
             if ($exist) {
                 return response()->json([
                     'message' => 'you already a participant'
                 ]);
             }
-            $request->validate([
-                'teamNum' => 'required|exists:teams,TNum'
-            ]);
 
-            $t_id = DB::table('teams')->where('TNum', $request->teamNum)->first();
+            //check ig user is a TL "team leader"
+            if ($user->role_id != NULL) {
+                $role_u = DB::table('roles')->where('id', $user->role_id)->first();
+                if ($role_u->Rname == 'TL') {
 
-            $partc = participant::create([
-                'pname' => $user->name,
-                'pemail' => $user->email,
-                'team_id' => $t_id->id,
-                'user_id' => $user->id
-            ]);
-            return new ParticipantResource($partc);
+                    $request->validate([
+                        'Tname' => 'required|unique:teams,Tname',
+                    ]);
+                    do {
+                        $teamNumber = mt_rand(100000, 999999);
+                        $exist = DB::table('teams')->where('TNum', $teamNumber)->exists();
+                    } while ($exist);
+                    $team = Team::create([
+                        'Tname' => $request->Tname,
+                        'TNum' => $teamNumber
+                    ]);
+
+                    $t_id = DB::table('teams')->where('TNum', $teamNumber)->first();
+
+                    $partc = participant::create([
+                        'pname' => $user->name,
+                        'pemail' => $user->email,
+                        'isTL' => true,
+                        'team_id' => $t_id->id,
+                        'user_id' => $user->id
+                    ]);
+                    return new ParticipantResource($partc);
+                }
+            } else { //here creat a simple participant
+
+                $request->validate([
+                    'teamNum' => 'required|exists:teams,TNum'
+                ]);
+                $t_id = DB::table('teams')->where('TNum', $request->teamNum)->first();
+
+                $partc = participant::create([
+                    'pname' => $user->name,
+                    'pemail' => $user->email,
+                    'isTL' => false,
+                    'team_id' => $t_id->id,
+                    'user_id' => $user->id
+                ]);
+                return new ParticipantResource($partc);
+            }
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
