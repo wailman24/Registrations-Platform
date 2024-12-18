@@ -81,12 +81,7 @@ class RoleController extends Controller
                 'status' => false,
                 'message' => $th->getMessage()
             ], 500);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500);
-        }
+        } 
     }
 
     /**
